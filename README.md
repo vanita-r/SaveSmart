@@ -2,6 +2,7 @@
 
 A personal savings dashboard built with **HTML, CSS, and JavaScript**. SaveSmart helps you set savings goals, record deposits and withdrawals, celebrate milestones, and estimate how long it may take to reach a goal.
 
+
 ## Features
 
 - Create, edit, and customize savings goals

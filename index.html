@@ -1,21 +1,28 @@
 <!doctype html>
 <html lang="en">
+
 <head>
+  <!-- Configure the page metadata, typography, and stylesheet. -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#f7f6fb" />
-  <title>SaveSpace — Your savings, with purpose</title>
+  <title>SaveSmart — Your savings, with purpose</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
+  <!-- Main application layout: navigation sidebar and dashboard content. -->
   <div class="app-shell">
+    <!-- Primary navigation and persistent workspace note. -->
     <aside class="sidebar">
-      <a class="brand" href="#" aria-label="SaveSpace home">
+      <a class="brand" href="#" aria-label="SaveSmart home">
         <span class="brand-mark">S</span>
-        <span>SaveSpace</span>
+        <span>SaveSmart</span>
       </a>
       <div class="side-label">WORKSPACE</div>
       <nav>
@@ -29,10 +36,11 @@
         <strong>Small steps add up.</strong>
         <p>Your future self is cheering you on. Keep going!</p>
       </div>
-      <div class="sidebar-footer">SaveSpace · Personal finance</div>
+      <div class="sidebar-footer">SaveSmart · Personal finance</div>
     </aside>
 
     <main class="main-content">
+      <!-- Page introduction, current date, and quick transaction action. -->
       <header class="topbar">
         <div>
           <div class="eyebrow" id="today-label">YOUR FINANCIAL SPACE</div>
@@ -42,6 +50,7 @@
         <button class="button button-primary" id="quick-add-btn">＋ Add savings</button>
       </header>
 
+      <!-- At-a-glance totals for savings progress across all goals. -->
       <section id="overview" class="summary-grid">
         <article class="summary-card total-card">
           <div class="card-topline"><span>Total saved</span><span class="summary-icon">◈</span></div>
@@ -60,6 +69,7 @@
         </article>
       </section>
 
+      <!-- Savings goal cards, with an empty state shown when no goals exist. -->
       <section class="content-section" id="goals">
         <div class="section-heading">
           <div>
@@ -77,7 +87,9 @@
         </div>
       </section>
 
+      <!-- Savings timeline planner and recent transaction activity. -->
       <section class="lower-grid">
+        <!-- Estimate how long a goal will take based on monthly contributions. -->
         <article class="panel" id="planner">
           <div class="section-heading compact">
             <div>
@@ -92,18 +104,22 @@
           <div class="planner-input-row">
             <div>
               <label for="monthly-amount">Monthly contribution</label>
-              <div class="input-with-prefix"><span>$</span><input id="monthly-amount" type="number" min="0" step="1" value="100" /></div>
+              <div class="input-with-prefix"><span>$</span><input id="monthly-amount" type="number" min="0" step="1"
+                  value="100" /></div>
             </div>
             <div>
               <label for="starting-amount">Already saved</label>
-              <div class="input-with-prefix"><span>$</span><input id="starting-amount" type="number" min="0" step="1" value="0" /></div>
+              <div class="input-with-prefix"><span>$</span><input id="starting-amount" type="number" min="0" step="1"
+                  value="0" /></div>
             </div>
           </div>
           <button class="button button-primary full-width" id="calculate-plan">Calculate my timeline</button>
           <div class="planner-result hidden" id="planner-result" aria-live="polite"></div>
-          <p class="tiny-disclaimer">Estimate only. Assumes consistent monthly contributions and does not include interest, fees, or changes in expenses.</p>
+          <p class="tiny-disclaimer">Estimate only. Assumes consistent monthly contributions and does not include
+            interest, fees, or changes in expenses.</p>
         </article>
 
+        <!-- Recent deposits and withdrawals are populated by app.js. -->
         <article class="panel activity-panel" id="activity">
           <div class="section-heading compact">
             <div>
@@ -117,6 +133,7 @@
         </article>
       </section>
 
+      <!-- Preview of the planned AI coach feature and its information dialog. -->
       <section class="ai-banner">
         <div class="ai-orb">✳</div>
         <div class="ai-copy">
@@ -127,17 +144,22 @@
         <button class="button button-dark" id="ai-info-btn">Explore the idea <span>→</span></button>
       </section>
 
-      <footer>SaveSpace is a personal planning tool. Your data is stored in this browser on this device.</footer>
+      <!-- Disclose the local storage behavior of the app. -->
+      <footer>SaveSmart is a personal planning tool. Your data is stored in this browser on this device.</footer>
     </main>
   </div>
 
+  <!-- Live region where temporary success and validation notifications appear. -->
   <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
 
-  <!-- Add savings modal -->
+  <!-- Dialog for recording a deposit or withdrawal against a savings goal. -->
   <dialog class="modal" id="transaction-modal">
     <form method="dialog" id="transaction-form">
       <div class="modal-header">
-        <div><div class="eyebrow">UPDATE YOUR PROGRESS</div><h2 id="transaction-title">Add savings</h2></div>
+        <div>
+          <div class="eyebrow">UPDATE YOUR PROGRESS</div>
+          <h2 id="transaction-title">Add savings</h2>
+        </div>
         <button class="icon-button" value="cancel" aria-label="Close">×</button>
       </div>
       <label for="transaction-goal">Goal</label>
@@ -145,11 +167,15 @@
       <div class="form-grid">
         <div>
           <label for="transaction-type">Type</label>
-          <select id="transaction-type"><option value="deposit">Deposit</option><option value="withdrawal">Withdrawal</option></select>
+          <select id="transaction-type">
+            <option value="deposit">Deposit</option>
+            <option value="withdrawal">Withdrawal</option>
+          </select>
         </div>
         <div>
           <label for="transaction-amount">Amount</label>
-          <div class="input-with-prefix"><span>$</span><input id="transaction-amount" type="number" min="0.01" step="0.01" placeholder="0.00" required /></div>
+          <div class="input-with-prefix"><span>$</span><input id="transaction-amount" type="number" min="0.01"
+              step="0.01" placeholder="0.00" required /></div>
         </div>
       </div>
       <label for="transaction-note">Note <span class="optional">(optional)</span></label>
@@ -161,11 +187,14 @@
     </form>
   </dialog>
 
-  <!-- Create/edit goal modal -->
+  <!-- Dialog for creating a savings goal or editing its details. -->
   <dialog class="modal" id="goal-modal">
     <form method="dialog" id="goal-form">
       <div class="modal-header">
-        <div><div class="eyebrow">MAKE IT HAPPEN</div><h2 id="goal-modal-title">Create a goal</h2></div>
+        <div>
+          <div class="eyebrow">MAKE IT HAPPEN</div>
+          <h2 id="goal-modal-title">Create a goal</h2>
+        </div>
         <button class="icon-button" value="cancel" aria-label="Close">×</button>
       </div>
       <input id="goal-id" type="hidden" />
@@ -174,12 +203,18 @@
       <div class="form-grid">
         <div>
           <label for="goal-target">Target amount</label>
-          <div class="input-with-prefix"><span>$</span><input id="goal-target" type="number" min="1" step="0.01" placeholder="1000" required /></div>
+          <div class="input-with-prefix"><span>$</span><input id="goal-target" type="number" min="1" step="0.01"
+              placeholder="1000" required /></div>
         </div>
         <div>
           <label for="goal-category">Category</label>
           <select id="goal-category">
-            <option>Emergency</option><option>Technology</option><option>Travel</option><option>Moving</option><option>Personal</option><option>Other</option>
+            <option>Emergency</option>
+            <option>Technology</option>
+            <option>Travel</option>
+            <option>Moving</option>
+            <option>Personal</option>
+            <option>Other</option>
           </select>
         </div>
       </div>
@@ -192,16 +227,23 @@
     </form>
   </dialog>
 
+  <!-- Explains the proposed AI coach and the security needs of a future integration. -->
   <dialog class="modal small-modal" id="info-modal">
     <form method="dialog">
-      <div class="modal-header"><h2>AI financial coach</h2><button class="icon-button" value="cancel" aria-label="Close">×</button></div>
+      <div class="modal-header">
+        <h2>AI financial coach</h2><button class="icon-button" value="cancel" aria-label="Close">×</button>
+      </div>
       <div class="ai-modal-icon">✳</div>
-      <p>That's a great next feature! The first version of SaveSpace works entirely in your browser. A future AI coach could use your goals, income, expenses, and preferred timeline to suggest a realistic plan.</p>
-      <p class="security-callout"><strong>Important:</strong> A real AI integration should call a secure backend. Never put an OpenAI API key in browser-side JavaScript or commit it to GitHub.</p>
+      <p>That's a great next feature! The first version of SaveSmart works entirely in your browser. A future AI coach
+        could use your goals, income, expenses, and preferred timeline to suggest a realistic plan.</p>
+      <p class="security-callout"><strong>Important:</strong> A real AI integration should call a secure backend. Never
+        put an OpenAI API key in browser-side JavaScript or commit it to GitHub.</p>
       <button class="button button-primary full-width" value="cancel">Sounds good</button>
     </form>
   </dialog>
 
+  <!-- App behavior and dynamic dashboard content are provided by app.js. -->
   <script src="app.js"></script>
 </body>
+
 </html>

@@ -1,5 +1,7 @@
-const STORAGE_KEY = "savespace-v1";
+// Use a versioned key so this app's data can be stored in the browser.
+const STORAGE_KEY = "savesmart-v1";
 
+// Provide starter savings goals for a first-time user.
 const starterGoals = [
   { id: crypto.randomUUID(), name: "Emergency fund", target: 1000, saved: 0, category: "Emergency", description: "Build your financial safety net." },
   { id: crypto.randomUUID(), name: "Computer + workstation", target: 1800, saved: 0, category: "Technology", description: "A new computer, monitor, keyboard and mouse." },
@@ -9,31 +11,37 @@ const starterGoals = [
   { id: crypto.randomUUID(), name: "Moving out", target: 8000, saved: 0, category: "Moving", description: "Your future apartment and moving costs." }
 ];
 
+// Initialize the app from saved data, or fall back to the starter goals.
 const defaultState = { goals: starterGoals, transactions: [], celebrated: {} };
 let state = loadState();
 
+// Share small helpers for selecting page elements, formatting currency, and escaping HTML.
 const $ = (selector) => document.querySelector(selector);
 const money = (amount) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Number(amount) || 0);
 const safeText = (value) => String(value ?? "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
 
+// Restore valid saved goals and transactions, otherwise start with a clean default state.
 function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (saved && Array.isArray(saved.goals) && Array.isArray(saved.transactions)) return saved;
   } catch (error) {
-    console.warn("Could not load saved SaveSpace data:", error);
+    console.warn("Could not load saved SaveSmart data:", error);
   }
   return structuredClone(defaultState);
 }
 
+// Persist the current goals, transactions, and milestone celebrations in browser storage.
 function persist() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
+// Add up all saved balances across the user's goals.
 function totalSaved() {
   return state.goals.reduce((sum, goal) => sum + Number(goal.saved || 0), 0);
 }
 
+// Refresh every dashboard area that depends on the current app state.
 function render() {
   renderSummary();
   renderGoals();
@@ -41,6 +49,7 @@ function render() {
   renderGoalOptions();
 }
 
+// Update the summary cards with saved totals, active goals, and completed goals.
 function renderSummary() {
   const total = totalSaved();
   const remaining = state.goals.reduce((sum, goal) => sum + Math.max(0, Number(goal.target) - Number(goal.saved)), 0);
@@ -50,10 +59,12 @@ function renderSummary() {
   $("#total-saved-caption").textContent = `${state.goals.filter(goal => goal.saved >= goal.target).length} goal(s) completed`;
 }
 
+// Choose a decorative icon based on a goal's category.
 function categoryIcon(category) {
   return ({ Emergency: "♡", Technology: "⌘", Travel: "✈", Moving: "⌂", Personal: "✦", Other: "◎" })[category] || "◎";
 }
 
+// Draw goal cards, progress indicators, and their add/edit actions.
 function renderGoals() {
   const grid = $("#goal-grid");
   $("#empty-goals").classList.toggle("hidden", state.goals.length > 0);
@@ -88,6 +99,7 @@ function renderGoals() {
   grid.querySelectorAll("[data-edit]").forEach(button => button.addEventListener("click", () => openGoalModal(button.dataset.edit)));
 }
 
+// Show the six most recent transactions, with separate styles for withdrawals.
 function renderActivity() {
   const list = $("#activity-list");
   const transactions = [...state.transactions].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 6);
@@ -104,12 +116,14 @@ function renderActivity() {
   }).join("");
 }
 
+// Keep transaction and planner dropdowns synchronized with the current goals.
 function renderGoalOptions() {
   const options = state.goals.map(goal => `<option value="${goal.id}">${safeText(goal.name)}</option>`).join("");
   $("#transaction-goal").innerHTML = options;
   $("#planner-goal").innerHTML = options || `<option value="">Create a goal first</option>`;
 }
 
+// Add a temporary, safely escaped notification to the page.
 function showToast(title, message) {
   const toast = document.createElement("div");
   toast.className = "toast";
@@ -118,6 +132,7 @@ function showToast(title, message) {
   window.setTimeout(() => toast.remove(), 4600);
 }
 
+// Celebrate emergency-fund dollar milestones and percentage progress for every goal.
 function checkMilestones(goal, previousSaved) {
   const milestones = [
     { amount: 100, title: "First milestone!", message: "You saved your first $100. That's a great start!" },
@@ -149,6 +164,7 @@ function checkMilestones(goal, previousSaved) {
   persist();
 }
 
+// Prepare and open the transaction dialog, optionally preselecting a goal.
 function openTransactionModal(goalId) {
   if (!state.goals.length) {
     showToast("Create a goal first", "Add a savings goal before recording a transaction.");
@@ -159,6 +175,7 @@ function openTransactionModal(goalId) {
   $("#transaction-modal").showModal();
 }
 
+// Reset the goal dialog and populate it when editing an existing goal.
 function openGoalModal(goalId) {
   $("#goal-form").reset();
   const goal = state.goals.find(item => item.id === goalId);
@@ -173,6 +190,7 @@ function openGoalModal(goalId) {
   $("#goal-modal").showModal();
 }
 
+// Validate and record a deposit or withdrawal, then refresh balances and activity.
 $("#transaction-form").addEventListener("submit", event => {
   event.preventDefault();
   const goal = state.goals.find(item => item.id === $("#transaction-goal").value);
@@ -199,6 +217,7 @@ $("#transaction-form").addEventListener("submit", event => {
   showToast(type === "deposit" ? "Savings updated" : "Withdrawal recorded", `${money(amount)} ${type === "deposit" ? "added to" : "withdrawn from"} ${goal.name}.`);
 });
 
+// Validate and save goal details, either updating an existing goal or creating a new one.
 $("#goal-form").addEventListener("submit", event => {
   event.preventDefault();
   const id = $("#goal-id").value;
@@ -225,6 +244,7 @@ $("#goal-form").addEventListener("submit", event => {
   showToast(existing ? "Goal updated" : "New goal created", `${name} is ready for your next step.`);
 });
 
+// Estimate the time and target date needed to reach the selected savings goal.
 function calculatePlan() {
   const goal = state.goals.find(item => item.id === $("#planner-goal").value);
   const monthly = Number($("#monthly-amount").value);
@@ -253,6 +273,7 @@ function calculatePlan() {
   result.classList.remove("hidden");
 }
 
+// Connect dashboard controls to the planner, dialogs, and assistant information.
 $("#calculate-plan").addEventListener("click", calculatePlan);
 $("#planner-goal").addEventListener("change", () => {
   const goal = state.goals.find(item => item.id === $("#planner-goal").value);
@@ -263,5 +284,6 @@ $("#new-goal-btn").addEventListener("click", () => openGoalModal());
 $("#empty-add-goal").addEventListener("click", () => openGoalModal());
 $("#ai-info-btn").addEventListener("click", () => $("#info-modal").showModal());
 
+// Set today's date in the dashboard and render the initial state.
 $("#today-label").textContent = new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" }).toUpperCase();
 render();
