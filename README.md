@@ -27,6 +27,11 @@ A personal savings dashboard built with **HTML, CSS, and JavaScript**. SaveSmart
 - Add export/import backup (JSON or CSV)
 - Add charts for contributions over time
 
+### Log in / Sign up
+- Add a sign up and log in page for users
+- Set up Supabase or Firebase for authentication and databases
+  - Will be responsible for 3 tables: Users, SavingsGoals, Transactions
+
 ### AI financial coach
 A future AI feature could accept a user's goals, income, pay frequency, recurring expenses, and target dates, then propose a realistic savings allocation and explain tradeoffs.
 
